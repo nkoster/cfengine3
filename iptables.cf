@@ -1,4 +1,4 @@
-bundle agent iptables_swarm
+bundle agent iptables
 {
   meta:
       "tags" slist => { "autorun" };

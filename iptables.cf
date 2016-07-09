@@ -5,8 +5,8 @@ bundle agent iptables
 
   classes:
     some_host_class::
-      "ok_22"   expression => returnszero("/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 22 -j ACCEPT", "noshell");
-      "ok_443"  expression => returnszero("/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 443 -j ACCEPT", "noshell");
+      "ok_22" expression => returnszero("/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 22 -j ACCEPT", "noshell");
+      "ok_443" expression => returnszero("/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 443 -j ACCEPT", "noshell");
       "ok_3376" expression => returnszero("/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 3376 -j ACCEPT", "noshell");
       "ok_5043" expression => returnszero("/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 5043 -j ACCEPT", "noshell");
       "ok_4444_5000" expression => returnszero("/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp -m tcp --match multiport --dports 4444:5000 -j ACCEPT", "noshell");

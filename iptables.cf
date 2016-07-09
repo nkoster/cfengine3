@@ -1,0 +1,42 @@
+bundle agent iptables_swarm
+{
+  meta:
+      "tags" slist => { "autorun" };
+
+  classes:
+    some_host_class::
+      "ok_22"   expression => returnszero("/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 22 -j ACCEPT", "noshell");
+      "ok_443"  expression => returnszero("/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 443 -j ACCEPT", "noshell");
+      "ok_3376" expression => returnszero("/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 3376 -j ACCEPT", "noshell");
+      "ok_5043" expression => returnszero("/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 5043 -j ACCEPT", "noshell");
+      "ok_4444_5000" expression => returnszero("/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp -m tcp --match multiport --dports 4444:5000 -j ACCEPT", "noshell");
+      "ok_drop" expression => returnszero("/sbin/iptables -C INPUT -i eth0 -j DROP", "noshell");
+
+  commands:
+    some_host_class.!ok_22::
+      "/sbin/iptables -I INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 22 -j ACCEPT";
+    some_host_class.!ok_443::
+      "/sbin/iptables -I INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 443 -j ACCEPT";
+    some_host_class.!ok_3376::
+      "/sbin/iptables -I INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 3376 -j ACCEPT";
+    some_host_class.!ok_5043::
+      "/sbin/iptables -I INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 5043 -j ACCEPT";
+    some_host_class.!ok_4444_5000::
+      "/sbin/iptables -I INPUT -i eth0 -s 192.168.1/24 -p tcp -m tcp --match multiport --dports 4444:5000 -j ACCEPT";
+    some_host_class.!ok_drop::
+      "/sbin/iptables -A INPUT -i eth0 -j DROP";
+
+  reports:
+    some_host_class.!ok_22::
+      "Missing port 22 rule inserted!";
+    some_host_class.!ok_443::
+      "Missing port 443 rule inserted!";
+    some_host_class.!ok_3376::
+      "Missing port 3376 rule inserted!";
+    some_host_class.!ok_5043::
+      "Missing port 5043 rule inserted!";
+    some_host_class.!ok_4444_5000::
+      "Missing port 4444:5000 rule inserted!";
+    some_host_class.!ok_drop::
+      "Missing DROP rule appended!";
+}

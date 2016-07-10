@@ -6,8 +6,8 @@ bundle agent iptables_update_dynamic
 
   vars:
     "CHECK" string => "/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp";
-    "CHECK_DROP" string => "/sbin/iptables -C INPUT -i eth0 -j DROP";
     "INSERT" string => "/sbin/iptables -I INPUT -i eth0 -s 192.168.1/24 -p tcp";
+    "CHECK_DROP" string => "/sbin/iptables -C INPUT -i eth0 -j DROP";
     "APPEND_DROP" string => "/sbin/iptables -A INPUT -i eth0 -j DROP";
       
   classes:
@@ -17,7 +17,7 @@ bundle agent iptables_update_dynamic
       "ok_3376" expression => returnszero("$(CHECK) --dport 3376 -j ACCEPT", "noshell");
       "ok_5043" expression => returnszero("$(CHECK) --dport 5043 -j ACCEPT", "noshell");
       "ok_4444_5000" expression => returnszero("$(CHECK) -m tcp --match multiport --dports 4444:5000 -j ACCEPT", "noshell");
-      "ok_drop" expression => returnszero("$(CHECKDROP)", "noshell");
+      "ok_drop" expression => returnszero("$(CHECK_DROP)", "noshell");
 
   commands:
     some_hosts.!ok_22::

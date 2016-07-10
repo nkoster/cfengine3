@@ -1,42 +1,50 @@
-bundle agent iptables
+bundle agent iptables_update_dynamic
 {
+
   meta:
       "tags" slist => { "autorun" };
 
+  vars:
+    "CHECK" string => "/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp";
+    "CHECK_DROP" string => "/sbin/iptables -C INPUT -i eth0 -j DROP";
+    "INSERT" string => "/sbin/iptables -I INPUT -i eth0 -s 192.168.1/24 -p tcp";
+    "APPEND_DROP" string => "/sbin/iptables -A INPUT -i eth0 -j DROP";
+      
   classes:
-    some_host_class::
-      "ok_22" expression => returnszero("/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 22 -j ACCEPT", "noshell");
-      "ok_443" expression => returnszero("/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 443 -j ACCEPT", "noshell");
-      "ok_3376" expression => returnszero("/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 3376 -j ACCEPT", "noshell");
-      "ok_5043" expression => returnszero("/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 5043 -j ACCEPT", "noshell");
-      "ok_4444_5000" expression => returnszero("/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp -m tcp --match multiport --dports 4444:5000 -j ACCEPT", "noshell");
-      "ok_drop" expression => returnszero("/sbin/iptables -C INPUT -i eth0 -j DROP", "noshell");
+    some_hosts::
+      "ok_22" expression => returnszero("$(CHECK) --dport 22 -j ACCEPT", "noshell");
+      "ok_443" expression => returnszero("$(CHECK) --dport 443 -j ACCEPT", "noshell");
+      "ok_3376" expression => returnszero("$(CHECK) --dport 3376 -j ACCEPT", "noshell");
+      "ok_5043" expression => returnszero("$(CHECK) --dport 5043 -j ACCEPT", "noshell");
+      "ok_4444_5000" expression => returnszero("$(CHECK) -m tcp --match multiport --dports 4444:5000 -j ACCEPT", "noshell");
+      "ok_drop" expression => returnszero("$(CHECKDROP)", "noshell");
 
   commands:
-    some_host_class.!ok_22::
-      "/sbin/iptables -I INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 22 -j ACCEPT";
-    some_host_class.!ok_443::
-      "/sbin/iptables -I INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 443 -j ACCEPT";
-    some_host_class.!ok_3376::
-      "/sbin/iptables -I INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 3376 -j ACCEPT";
-    some_host_class.!ok_5043::
-      "/sbin/iptables -I INPUT -i eth0 -s 192.168.1/24 -p tcp --dport 5043 -j ACCEPT";
-    some_host_class.!ok_4444_5000::
-      "/sbin/iptables -I INPUT -i eth0 -s 192.168.1/24 -p tcp -m tcp --match multiport --dports 4444:5000 -j ACCEPT";
-    some_host_class.!ok_drop::
-      "/sbin/iptables -A INPUT -i eth0 -j DROP";
+    some_hosts.!ok_22::
+      "$(INSERT) --dport 22 -j ACCEPT";
+    some_hosts.!ok_443::
+      "$(INSERT) --dport 443 -j ACCEPT";
+    some_hosts.!ok_3376::
+      "$(INSERT) --dport 3376 -j ACCEPT";
+    some_hosts.!ok_5043::
+      "$(INSERT) --dport 5043 -j ACCEPT";
+    some_hosts.!ok_4444_5000::
+      "$(INSERT) tcp -m tcp --match multiport --dports 4444:5000 -j ACCEPT";
+    some_hosts.!ok_drop::
+      "$(APPEND_DROP)";
 
   reports:
-    some_host_class.!ok_22::
+    some_hosts.!ok_22::
       "Missing port 22 rule inserted!";
-    some_host_class.!ok_443::
+    some_hosts.!ok_443::
       "Missing port 443 rule inserted!";
-    some_host_class.!ok_3376::
+    some_hosts.!ok_3376::
       "Missing port 3376 rule inserted!";
-    some_host_class.!ok_5043::
+    some_hosts.!ok_5043::
       "Missing port 5043 rule inserted!";
-    some_host_class.!ok_4444_5000::
+    some_hosts.!ok_4444_5000::
       "Missing port 4444:5000 rule inserted!";
-    some_host_class.!ok_drop::
+    some_hosts.!ok_drop::
       "Missing DROP rule appended!";
+
 }

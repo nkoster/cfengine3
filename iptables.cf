@@ -2,7 +2,7 @@ bundle agent iptables_update_dynamic
 {
 
   meta:
-      "tags" slist => { "autorun" };
+    "tags" slist => { "autorun" };
 
   vars:
     "CHECK" string => "/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp";

@@ -21,7 +21,7 @@ bundle agent iptables_update_dynamic
       "APPEND_DROP" string => "$(iptables) -A INPUT -i $(egress) -j DROP";
       
   classes:
-    some_hosts::
+    some_hosts|other_hosts::
       "missing_22" not => returnszero("$(CHECK) --dport 22 -j ACCEPT", "noshell");
       "missing_443" not => returnszero("$(CHECK) --dport 443 -j ACCEPT", "noshell");
       "missing_3376" not => returnszero("$(CHECK) --dport 3376 -j ACCEPT", "noshell");
@@ -29,7 +29,7 @@ bundle agent iptables_update_dynamic
       "missing_4444_5000" not => returnszero("$(CHECK) -m tcp --match multiport --dports 4444:5000 -j ACCEPT", "noshell");
       "missing_drop" not => returnszero("$(CHECK_DROP)", "noshell");
 
-  commands:
+  commands|other_hosts:
     some_hosts::
       missing_22::
         "$(INSERT) --dport 22 -j ACCEPT";
@@ -45,7 +45,7 @@ bundle agent iptables_update_dynamic
         "$(APPEND_DROP)";
 
   reports:
-    some_hosts::
+    some_hosts|other_hosts::
       missing_22::
         "Missing port 22 rule inserted!";
       missing_443::

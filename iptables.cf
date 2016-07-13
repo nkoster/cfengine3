@@ -6,10 +6,16 @@ bundle agent iptables_update_dynamic
 
   vars:
     some_hosts::
-      "CHECK" string => "/sbin/iptables -C INPUT -i eth0 -s 192.168.1/24 -p tcp";
-      "INSERT" string => "/sbin/iptables -I INPUT -i eth0 -s 192.168.1/24 -p tcp";
-      "CHECK_DROP" string => "/sbin/iptables -C INPUT -i eth0 -j DROP";
-      "APPEND_DROP" string => "/sbin/iptables -A INPUT -i eth0 -j DROP";
+      "egress" string => "eth0";
+      "iptables" string => "/sbin/iptables";
+    other_hosts::
+      "egress" string => "eth1";
+      "iptables" string => "/usr/sbin/iptables";
+    some_hosts|other_hosts::
+      "CHECK" string => "$(iptables) -C INPUT -i $(egress) -s 192.168.1/24 -p tcp";
+      "INSERT" string => "$(iptables) -I INPUT -i $(egress) -s 192.168.1/24 -p tcp";
+      "CHECK_DROP" string => "$(iptables) -C INPUT -i $(egress) -j DROP";
+      "APPEND_DROP" string => "$(iptables) -A INPUT -i $(egress) -j DROP";
       
   classes:
     some_hosts::

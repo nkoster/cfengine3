@@ -1,3 +1,6 @@
+#### Please beware for syntax errors since I didn't
+#### test the version that is published on github!!
+
 bundle agent iptables_update_dynamic
 {
 
@@ -5,11 +8,11 @@ bundle agent iptables_update_dynamic
     "tags" slist => { "autorun" };
 
   vars:
+    some_hosts|other_hosts::
+      "egress" string => execresult("/sbin/ip route show | grep default | sed 's/^.*dev //' | sed 's/ .*$//'", "useshell");
     some_hosts::
-      "egress" string => "eth0";
       "iptables" string => "/sbin/iptables";
     other_hosts::
-      "egress" string => "eth1";
       "iptables" string => "/usr/sbin/iptables";
     some_hosts|other_hosts::
       "CHECK" string => "$(iptables) -C INPUT -i $(egress) -s 192.168.1/24 -p tcp";
